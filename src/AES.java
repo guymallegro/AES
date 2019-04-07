@@ -5,11 +5,10 @@ import java.util.Arrays;
 
 public abstract class AES {
     final int ROUNDS = 3;
-    final int CHUNK_SIZE = 16;
-    final int MATRIX = 4;
+    private final int CHUNK_SIZE = 16;
+    private final int MATRIX = 4;
     byte[][] splitKeys;
     String outputFilePath;
-    String inputFilePath;
     byte[] cipherText;
     byte[] originalText;
     byte[][] state;
@@ -17,10 +16,10 @@ public abstract class AES {
     byte[][] key2;
     byte[][] key3;
 
-    public AES(String keyPath, String inputPath, String outputPath) {
+
+    public AES(String outputPath) {
         splitKeys = new byte[4][4 * (ROUNDS + 1)];
         state = new byte[MATRIX][MATRIX];
-        this.inputFilePath = inputPath;
         this.outputFilePath = outputPath;
         key1 = new byte[MATRIX][MATRIX];
         key2 = new byte[MATRIX][MATRIX];
@@ -39,7 +38,7 @@ public abstract class AES {
         return ret;
     }
 
-    public void generateMatrix(byte[] input, byte[][] output) {
+    void generateMatrix(byte[] input, byte[][] output) {
         int pos = 0;
         for (int i = 0; i < state.length; i++) {
             for (int j = 0; j < state[0].length; j++) {
@@ -52,21 +51,21 @@ public abstract class AES {
     void addRoundKey(int round) {
         switch (round) {
             case 0:
-                xorBytes(state, key1);
+                xorBytes(state, key1, state);
                 break;
             case 1:
-                xorBytes(state, key2);
+                xorBytes(state, key2, state);
                 break;
             case 2:
-                xorBytes(state, key3);
+                xorBytes(state, key3, state);
                 break;
         }
     }
 
-    private void xorBytes(byte[][] m, byte[][] n) {
+    public void xorBytes(byte[][] m, byte[][] n, byte[][] dest) {
         for (int i = 0; i < m.length; i++) {
             for (int j = 0; j < m[0].length; j++) {
-                state[i][j] = (byte) (((byte) m[i][j]) ^ ((byte) n[i][j]));
+                dest[i][j] = (byte) (m[i][j] ^ n[i][j]);
             }
         }
     }
@@ -86,4 +85,5 @@ public abstract class AES {
             System.out.println("Exception: " + e);
         }
     }
+
 }

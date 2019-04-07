@@ -7,7 +7,7 @@ class AESDecrypt extends AES {
     private byte[][] cipherInChunks;
 
     AESDecrypt(String keyPath, String inputFilePath, String outputFilePath) {
-        super(keyPath, inputFilePath, outputFilePath);
+        super(outputFilePath);
         readFiles(keyPath, inputFilePath);
 
     }

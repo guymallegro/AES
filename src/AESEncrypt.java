@@ -6,7 +6,7 @@ class AESEncrypt extends AES {
     private byte[][] originalInChunks;
 
     AESEncrypt(String keyPath, String inputFilePath, String outputFilePath) {
-        super(keyPath, inputFilePath, outputFilePath);
+        super(outputFilePath);
         readFiles(keyPath, inputFilePath);
     }
 
@@ -29,11 +29,7 @@ class AESEncrypt extends AES {
         WriteResults(true);
     }
 
-    private void shiftRowsLeft() {
-        for (int i = 1; i < 4; i++) {
-            leftRotate(state[i], i);
-        }
-    }
+
 
     private void readFiles(String keyPath, String cipherPath) {
         byte[] keys = new byte[0];
@@ -54,6 +50,11 @@ class AESEncrypt extends AES {
             System.out.println("Failed to read the cipher file.");
         }
         originalInChunks = SplitIntoChunks(originalText);
+    }
+    private void shiftRowsLeft() {
+        for (int i = 1; i < 4; i++) {
+            leftRotate(state[i], i);
+        }
     }
 
     private void leftRotate(byte[] arr, int d) {
