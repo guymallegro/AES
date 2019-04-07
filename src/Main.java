@@ -3,7 +3,7 @@ public class Main {
 
     public static void main(String args[]) {
        // String[] flags = args;
-        String[] flags={"-d","-k","/home/guy/Desktop/Projects/test/key_short","-i","/home/guy/Desktop/Projects/test/cipher_short","-o","/home/guy/Desktop/Projects/test/test_output"};
+        String[] flags={"-d","-k","/home/guy/Desktop/Projects/test/key_long","-i","/home/guy/Desktop/Projects/test/cipher_long","-o","/home/guy/Desktop/Projects/test/test_output"};
         switch (flags[0]) {
             case "-e":
                 Encryption(flags);
@@ -58,6 +58,5 @@ public class Main {
         }
         AESEncrypt encrypt = new AESEncrypt(keyPath,inputFilePath,outPutFilePath);
         encrypt.Encrypt();
-
     }
 }

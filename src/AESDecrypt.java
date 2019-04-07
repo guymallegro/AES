@@ -2,22 +2,22 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class AESDecrypt extends AES {
+class AESDecrypt extends AES {
 
     private byte[][] cipherInChunks;
 
-    public AESDecrypt(String keyPath, String inputFilePath, String outputFilePath) {
-        super(keyPath, inputFilePath,outputFilePath);
+    AESDecrypt(String keyPath, String inputFilePath, String outputFilePath) {
+        super(keyPath, inputFilePath, outputFilePath);
         readFiles(keyPath, inputFilePath);
 
     }
 
-    public void Decrypt() {
+    void Decrypt() {
         originalText = new byte[cipherText.length];
         int pos = 0;
         for (byte[] cipherInChunk : cipherInChunks) {
             generateMatrix(cipherInChunk, state);
-            for (int j = ROUNDS-1; j >= 0; j--) {
+            for (int j = ROUNDS - 1; j >= 0; j--) {
                 addRoundKey(j);
                 shiftRowsRight();
             }
@@ -31,7 +31,7 @@ public class AESDecrypt extends AES {
         WriteResults(false);
     }
 
-    public void readFiles(String keyPath, String cipherPath) {
+    private void readFiles(String keyPath, String cipherPath) {
         byte[] keys = new byte[0];
         Path keyPathObject = Paths.get(keyPath);
         try {
@@ -40,7 +40,9 @@ public class AESDecrypt extends AES {
             System.out.println("Failed to read the splitKeys file.");
         }
         splitKeys = SplitIntoChunks(keys);
-
+        generateMatrix(splitKeys[0], key1);
+        generateMatrix(splitKeys[1], key2);
+        generateMatrix(splitKeys[2], key3);
         Path cipherPathObject = Paths.get(cipherPath);
         try {
             cipherText = Files.readAllBytes(cipherPathObject);

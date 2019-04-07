@@ -66,12 +66,12 @@ public abstract class AES {
     private void xorBytes(byte[][] m, byte[][] n) {
         for (int i = 0; i < m.length; i++) {
             for (int j = 0; j < m[0].length; j++) {
-                state[i][j] = (byte) (m[i][j] ^ n[i][j]);
+                state[i][j] = (byte) (((byte) m[i][j]) ^ ((byte) n[i][j]));
             }
         }
     }
 
-    public void WriteResults(boolean cipher) {
+    void WriteResults(boolean cipher) {
         String path = outputFilePath;
         byte[] toWrite = cipherText;
         if (!cipher) {
@@ -81,7 +81,6 @@ public abstract class AES {
         try {
             OutputStream os = new FileOutputStream(file);
             os.write(toWrite);
-            System.out.println("Successfully" + " byte inserted");
             os.close();
         } catch (Exception e) {
             System.out.println("Exception: " + e);
