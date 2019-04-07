@@ -1,27 +1,34 @@
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 public class AESDecrypt extends AES {
 
-    byte[][] cipherInChunks;
-    final int ROUNDS =11;
+    private byte[][] cipherInChunks;
 
     public AESDecrypt(String keyPath, String inputFilePath, String outputFilePath) {
-        super(keyPath, inputFilePath);
-        this.outputFilePath = outputFilePath;
+        super(keyPath, inputFilePath,outputFilePath);
         readFiles(keyPath, inputFilePath);
 
     }
 
     public void Decrypt() {
-        for (int i = 0; i < cipherInChunks.length; i++) {
-            generateStateMatrix(Arrays.toString(cipherInChunks[i]));
-            addRoundKey(ROUNDS);
-
+        originalText = new byte[cipherText.length];
+        int pos = 0;
+        for (byte[] cipherInChunk : cipherInChunks) {
+            generateMatrix(cipherInChunk, state);
+            for (int j = ROUNDS-1; j >= 0; j--) {
+                addRoundKey(j);
+                shiftRowsRight();
+            }
+            for (int j = 0; j < 4; j++) {
+                for (int h = 0; h < 4; h++) {
+                    originalText[pos] = state[h][j];
+                    pos++;
+                }
+            }
         }
-
+        WriteResults(false);
     }
 
     public void readFiles(String keyPath, String cipherPath) {
@@ -43,4 +50,24 @@ public class AESDecrypt extends AES {
         cipherInChunks = SplitIntoChunks(cipherText);
 
     }
+
+    private void shiftRowsRight() {
+        for (int i = 1; i < 4; i++) {
+            rightRotate(state[i], i);
+        }
+    }
+
+
+    private void rightRotate(byte[] arr, int d) {
+        for (int i = 0; i < d; i++)
+            rightRotatebyOne(arr);
+    }
+
+    private void rightRotatebyOne(byte arr[]) {
+        byte temp = arr[3];
+        for (int i = 3; i > 0; i--)
+            arr[i] = arr[i - 1];
+        arr[0] = temp;
+    }
+
 }

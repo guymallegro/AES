@@ -1,25 +1,37 @@
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 
 public abstract class AES {
-
-    final int CHUNK_SIZE = 128;
+    final int ROUNDS = 3;
+    final int CHUNK_SIZE = 16;
     final int MATRIX = 4;
     byte[][] splitKeys;
     String outputFilePath;
+    String inputFilePath;
     byte[] cipherText;
     byte[] originalText;
     byte[][] state;
+    byte[][] key1;
+    byte[][] key2;
+    byte[][] key3;
 
-    public AES(String keyPath, String inputPath) {
-        splitKeys = new byte[MATRIX][MATRIX];
-        state = new byte[3][4];
+    public AES(String keyPath, String inputPath, String outputPath) {
+        splitKeys = new byte[4][4 * (ROUNDS + 1)];
+        state = new byte[MATRIX][MATRIX];
+        this.inputFilePath = inputPath;
+        this.outputFilePath = outputPath;
+        key1 = new byte[MATRIX][MATRIX];
+        key2 = new byte[MATRIX][MATRIX];
+        key3 = new byte[MATRIX][MATRIX];
+
+
     }
 
-    public byte[][] SplitIntoChunks(byte[] source) {
+    byte[][] SplitIntoChunks(byte[] source) {
         byte[][] ret = new byte[(int) Math.ceil(source.length / (double) CHUNK_SIZE)][CHUNK_SIZE];
-
         int start = 0;
-
         for (int i = 0; i < ret.length; i++) {
             ret[i] = Arrays.copyOfRange(source, start, start + CHUNK_SIZE);
             start += CHUNK_SIZE;
@@ -27,50 +39,52 @@ public abstract class AES {
         return ret;
     }
 
-    public void generateStateMatrix(String input) {
-        String sb;
-        int start = 0;
-        int end = 2;
+    public void generateMatrix(byte[] input, byte[][] output) {
+        int pos = 0;
         for (int i = 0; i < state.length; i++) {
             for (int j = 0; j < state[0].length; j++) {
-                sb = input.substring(start, end);
-                state[j][i] = (byte) (Integer.parseInt(sb, 16));
-                start += 2;
-                end += 2;
+                output[j][i] = input[pos];
+                pos++;
             }
         }
     }
 
-    public void addRoundKey(int rounds) {
-        byte[] col;
-        int j = 0;
-        for (int i = 0; i < 3; i++) {
-            col = xorBytes(getColumn(state, i), getColumn(splitKeys, rounds * 4 + j));
-            columnCopy(state, i, col);
-            j++;
-        }
-
-    }
-
-    private byte[] xorBytes(byte[] m, byte[] n) {
-        byte[] result = new byte[m.length];
-        for (int i = 0; i < m.length; i++)
-            result[i] = (byte) (m[i] ^ n[i]);
-        return result;
-    }
-
-    private byte[] getColumn(byte[][] mat, int pos) {
-        byte[] result = new byte[mat.length];
-        for (int i = 0; i < 4; i++)
-            result[i] = mat[i][pos];
-        return result;
-    }
-
-    private void columnCopy(byte[][] mat, int pos, byte[] col) {
-        for (int i = 0; i < col.length; i++) {
-            mat[i][pos] = col[i];
+    void addRoundKey(int round) {
+        switch (round) {
+            case 0:
+                xorBytes(state, key1);
+                break;
+            case 1:
+                xorBytes(state, key2);
+                break;
+            case 2:
+                xorBytes(state, key3);
+                break;
         }
     }
 
+    private void xorBytes(byte[][] m, byte[][] n) {
+        for (int i = 0; i < m.length; i++) {
+            for (int j = 0; j < m[0].length; j++) {
+                state[i][j] = (byte) (m[i][j] ^ n[i][j]);
+            }
+        }
+    }
 
+    public void WriteResults(boolean cipher) {
+        String path = outputFilePath;
+        byte[] toWrite = cipherText;
+        if (!cipher) {
+            toWrite = originalText;
+        }
+        File file = new File(path);
+        try {
+            OutputStream os = new FileOutputStream(file);
+            os.write(toWrite);
+            System.out.println("Successfully" + " byte inserted");
+            os.close();
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
+        }
+    }
 }
