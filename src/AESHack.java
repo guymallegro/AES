@@ -5,16 +5,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class AESHack extends AES {
-    byte[] plainText;
-    byte[][] plainTextInChunks;
-    byte[][] cipherTextInChunks;
-    byte[][] plainTextMatrics;
-    byte[][] cipherTextMatrics;
-    byte[] keys;
+class AESHack extends AES {
+    private byte[] keys;
 
 
-    public AESHack(String plainTextPath, String cipherTextPath, String outputPath) {
+    AESHack(String plainTextPath, String cipherTextPath, String outputPath) {
         super(outputPath);
         readFiles(plainTextPath, cipherTextPath);
         keys = new byte[48];
@@ -23,48 +18,46 @@ public class AESHack extends AES {
     private void readFiles(String plainTextPath, String cipherTextPath) {
         Path plainTextPathObject = Paths.get(plainTextPath);
         try {
-            plainText = Files.readAllBytes(plainTextPathObject);
+            originalText = Files.readAllBytes(plainTextPathObject);
         } catch (Exception e) {
             System.out.println("Failed to read the plain text file.");
         }
-        plainTextInChunks = SplitIntoChunks(plainText);
         Path cipherTextPathObject = Paths.get(cipherTextPath);
         try {
             cipherText = Files.readAllBytes(cipherTextPathObject);
         } catch (Exception e) {
             System.out.println("Failed to read the cipher file.");
         }
-        cipherTextInChunks = SplitIntoChunks(cipherText);
     }
 
     void Hack() {
-        plainTextMatrics = new byte[4][4];
-        cipherTextMatrics = new byte[4][4];
-        generateMatrix(plainText, plainTextMatrics);
+        byte[][] plainTextMatrics = new byte[4][4];
+        byte[][] cipherTextMatrics = new byte[4][4];
+        generateMatrix(originalText, plainTextMatrics);
         generateMatrix(cipherText, cipherTextMatrics);
-        key1 = new byte[4][4];
-        key2 = new byte[4][4];
-        shiftRowsLeft(key2);
+        key1Matrix = new byte[4][4];
+        key2Matrix = new byte[4][4];
+        shiftRowsLeft(key2Matrix);
         for (int i = 0; i < 3; i++) {
             shiftRowsLeft(plainTextMatrics);
         }
-        xorBytes(plainTextMatrics, cipherTextMatrics, key3);
+        xorBytes(plainTextMatrics, cipherTextMatrics, key3Matrix);
         int pos = 0;
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                keys[pos] = key1[j][i];
+                keys[pos] = key1Matrix[j][i];
                 pos++;
             }
         }
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                keys[pos] = key2[j][i];
+                keys[pos] = key2Matrix[j][i];
                 pos++;
             }
         }
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                keys[pos] = key3[j][i];
+                keys[pos] = key3Matrix[j][i];
                 pos++;
             }
         }

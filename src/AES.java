@@ -7,25 +7,20 @@ public abstract class AES {
     final int ROUNDS = 3;
     private final int CHUNK_SIZE = 16;
     private final int MATRIX = 4;
-    byte[][] splitKeys;
     String outputFilePath;
     byte[] cipherText;
     byte[] originalText;
     byte[][] state;
-    byte[][] key1;
-    byte[][] key2;
-    byte[][] key3;
-
+    byte[][] key1Matrix;
+    byte[][] key2Matrix;
+    byte[][] key3Matrix;
 
     public AES(String outputPath) {
-        splitKeys = new byte[4][4 * (ROUNDS + 1)];
-        state = new byte[MATRIX][MATRIX];
         this.outputFilePath = outputPath;
-        key1 = new byte[MATRIX][MATRIX];
-        key2 = new byte[MATRIX][MATRIX];
-        key3 = new byte[MATRIX][MATRIX];
-
-
+        state = new byte[MATRIX][MATRIX];
+        key1Matrix = new byte[MATRIX][MATRIX];
+        key2Matrix = new byte[MATRIX][MATRIX];
+        key3Matrix = new byte[MATRIX][MATRIX];
     }
 
     byte[][] SplitIntoChunks(byte[] source) {
@@ -51,18 +46,18 @@ public abstract class AES {
     void addRoundKey(int round) {
         switch (round) {
             case 0:
-                xorBytes(state, key1, state);
+                xorBytes(state, key1Matrix, state);
                 break;
             case 1:
-                xorBytes(state, key2, state);
+                xorBytes(state, key2Matrix, state);
                 break;
             case 2:
-                xorBytes(state, key3, state);
+                xorBytes(state, key3Matrix, state);
                 break;
         }
     }
 
-    public void xorBytes(byte[][] m, byte[][] n, byte[][] dest) {
+    void xorBytes(byte[][] m, byte[][] n, byte[][] dest) {
         for (int i = 0; i < m.length; i++) {
             for (int j = 0; j < m[0].length; j++) {
                 dest[i][j] = (byte) (m[i][j] ^ n[i][j]);

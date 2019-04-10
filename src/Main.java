@@ -2,9 +2,7 @@ public class Main {
 
 
     public static void main(String args[]) {
-        // String[] flags = args;
-        String[] flags = {"-d", "-k", "/home/guy/Desktop/Projects/test/test_keys", "-i", "/home/guy/Desktop/Projects/test/cipher_short", "-o", "/home/guy/Desktop/Projects/test/test_output"};
-        //String[] flags = {"-b", "-m", "/home/guy/Desktop/Projects/test/message_short", "-c", "/home/guy/Desktop/Projects/test/cipher_short", "-o", "/home/guy/Desktop/Projects/test/test_keys"};
+        String[] flags = args;
         switch (flags[0]) {
             case "-e":
                 Encryption(flags);

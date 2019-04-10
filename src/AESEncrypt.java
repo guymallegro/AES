@@ -30,7 +30,6 @@ class AESEncrypt extends AES {
     }
 
 
-
     private void readFiles(String keyPath, String cipherPath) {
         byte[] keys = new byte[0];
         Path keyPathObject = Paths.get(keyPath);
@@ -39,10 +38,10 @@ class AESEncrypt extends AES {
         } catch (Exception e) {
             System.out.println("Failed to read the splitKeys file.");
         }
-        splitKeys = SplitIntoChunks(keys);
-        generateMatrix(splitKeys[0], key1);
-        generateMatrix(splitKeys[1], key2);
-        generateMatrix(splitKeys[2], key3);
+        byte[][] splitKeys = SplitIntoChunks(keys);
+        generateMatrix(splitKeys[0], key1Matrix);
+        generateMatrix(splitKeys[1], key2Matrix);
+        generateMatrix(splitKeys[2], key3Matrix);
         Path cipherPathObject = Paths.get(cipherPath);
         try {
             originalText = Files.readAllBytes(cipherPathObject);
@@ -51,6 +50,7 @@ class AESEncrypt extends AES {
         }
         originalInChunks = SplitIntoChunks(originalText);
     }
+
     private void shiftRowsLeft() {
         for (int i = 1; i < 4; i++) {
             leftRotate(state[i], i);

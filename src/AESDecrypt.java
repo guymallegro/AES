@@ -39,10 +39,10 @@ class AESDecrypt extends AES {
         } catch (Exception e) {
             System.out.println("Failed to read the splitKeys file.");
         }
-        splitKeys = SplitIntoChunks(keys);
-        generateMatrix(splitKeys[0], key1);
-        generateMatrix(splitKeys[1], key2);
-        generateMatrix(splitKeys[2], key3);
+        byte[][] splitKeys = SplitIntoChunks(keys);
+        generateMatrix(splitKeys[0], key1Matrix);
+        generateMatrix(splitKeys[1], key2Matrix);
+        generateMatrix(splitKeys[2], key3Matrix);
         Path cipherPathObject = Paths.get(cipherPath);
         try {
             cipherText = Files.readAllBytes(cipherPathObject);
