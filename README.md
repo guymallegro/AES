@@ -1,5 +1,7 @@
 Instructions:
+
   Encrypt/Decrypt:
+  
     –e : instruction to encrypt the input file
     –d: instruction to decrypt the input file
     –k <path>: path to the keys, the key should be 384 bit (128*3) for . and should be divided into 3 separate keys.
@@ -9,6 +11,7 @@ Instructions:
         e.g  Java –jar aes.jar –e –k key.txt –i message.txt –o cypther.txt
 
   Hack:
+  
     –b : instruction to break the encryption algorithm
     –m <path>: denotes the path to the plain-text message
     –c <path>: denotes the path to the cipher-text message
